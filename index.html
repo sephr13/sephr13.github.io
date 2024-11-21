@@ -1,0 +1,1623 @@
+```html
+<html><head><base href="."><title>Cloth Simulation v2</title><style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  canvas {
+    border: 2px solid #333;
+  }
+  .controls {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    font-family: Arial, sans-serif;
+    max-width: 300px;
+  }
+  .controls.effects {
+    left: auto;
+    right: 10px;
+    max-width: 300px;
+  }
+  .controls button {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .controls button:hover {
+    background: #666;
+  }
+  .controls button.fun {
+    background: linear-gradient(45deg, #ff4081, #7c4dff);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    margin: 5px;
+    border-radius: 15px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .controls button.fun:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    background: linear-gradient(45deg, #ff6b9b, #9c7cff);
+  }
+  .slider-container {
+    margin: 10px 0;
+  }
+  .slider-container label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .slider-container input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #00ffff, #00ff00);
+    outline: none;
+    opacity: 0.8;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ffff, #00ff00);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+  }
+  .slider-container input[type="range"]::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ffff, #00ff00);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .slider-container input[type="range"]:hover {
+    opacity: 1;
+  }
+  .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .slider-container input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .value-display {
+    font-size: 0.8em;
+    color: #aaa;
+  }
+  .rainbow {
+    animation: rainbow 3s linear infinite;
+  }
+  @keyframes rainbow {
+    0% { stroke: #ff0000; }
+    17% { stroke: #ff9900; }
+    33% { stroke: #ffff00; }
+    50% { stroke: #00ff00; }
+    67% { stroke: #0099ff; }
+    83% { stroke: #6633ff; }
+    100% { stroke: #ff0000; }
+  }
+  .controls .section-header {
+    background: linear-gradient(45deg, #00bcd4, #3f51b5);
+    padding: 8px;
+    margin: -10px -10px 10px -10px;
+    border-radius: 5px 5px 0 0;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .controls .advanced {
+    border-left: 2px solid #666;
+    padding-left: 10px;
+    margin-top: 15px;
+  }
+  .controls .satisfying {
+    background: linear-gradient(45deg, #2196f3, #00bcd4);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    margin: 5px;
+    border-radius: 15px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+  }
+  .controls .satisfying:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(33,150,243,0.5);
+    background: linear-gradient(45deg, #42a5f5, #26c6da);
+  }
+  .controls .destructive {
+    background: linear-gradient(45deg, #ff4444, #cc0000);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    margin: 5px;
+    border-radius: 15px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    width: 100%;
+    display: block;
+  }
+  .controls .destructive:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255,0,0,0.5);
+    background: linear-gradient(45deg, #ff6666, #ee0000);
+  }
+  .controls .section-header.destructive {
+    margin-top: 30px;
+  }
+  .bug-fix-notice {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    color: #666;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    padding: 5px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+  }
+  /* Add these styles */
+  .dropdown {
+    margin-bottom: 15px;
+    transition: margin 0.3s ease;
+  }
+
+  .dropdown-header {
+    background: linear-gradient(45deg, #00bcd4, #3f51b5);
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .dropdown-header:hover {
+    transform: scale(1.02);
+  }
+
+  .dropdown-header:after {
+    content: '▼';
+    font-size: 12px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dropdown.open .dropdown-header:after {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-content {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    opacity: 0;
+    background: rgba(0,0,0,0.7);
+    border-radius: 0 0 5px 5px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dropdown.open .dropdown-content {
+    max-height: 2000px; /* Large enough to fit content */
+    opacity: 1;
+    padding: 10px;
+  }
+
+  .dropdown.open {
+    margin-bottom: 25px;
+  }
+
+  /* Add a subtle glow effect on open */
+  .dropdown.open .dropdown-header {
+    box-shadow: 0 0 15px rgba(0,188,212,0.3);
+  }
+
+  /* Add animation for child elements */
+  .dropdown-content > * {
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .dropdown.open .dropdown-content > * {
+    transform: translateY(0);
+    opacity: 1;
+  }
+</style></head><body>
+<div class="controls">
+  <div class="dropdown">
+    <div class="dropdown-header" style="background: linear-gradient(45deg, #9c27b0, #3f51b5);">Basic Controls</div>
+    <div class="dropdown-content">
+    <select id="fabricType" style="width: 100%; margin-bottom: 10px; background: #444; color: white; border: none; padding: 5px; border-radius: 3px;">
+      <option value="normal">Normal Fabric</option>
+      <option value="silk">Silk</option>
+      <option value="denim">Denim</option>
+    </select>
+      <button onclick="toggleWind()" style="background: linear-gradient(45deg, #8e44ad, #3498db)">Toggle Wind</button>
+      <button onclick="resetCloth()" style="background: linear-gradient(45deg, #9b59b6, #2980b9)">Reset</button>
+      <button onclick="togglePin()" style="background: linear-gradient(45deg, #8e44ad, #2980b9)">Toggle Pin Mode</button>
+      <button onclick="togglePoints()" style="background: linear-gradient(45deg, #9b59b6, #3498db)">Toggle Points</button>
+      <button class="fun" onclick="toggleRainbow()" style="background: linear-gradient(45deg, #8e44ad, #2980b9)">Rainbow Mode</button>
+      <button class="fun" onclick="explodeCloth()" style="background: linear-gradient(45deg, #9b59b6, #2980b9)">Explode!</button>
+      <button class="fun" onclick="toggleAntiGravity()" style="background: linear-gradient(45deg, #8e44ad, #2980b9)">Anti-Gravity</button>
+      <button class="fun" onclick="toggleTornado()" style="background: linear-gradient(45deg, #9b59b6, #3498b9)">Tornado Mode</button>
+      <button class="fun" onclick="toggleBall()" style="background: linear-gradient(45deg, #8e44ad, #2980b9)">Bouncy Ball</button>
+    </div>
+  </div>
+
+  <div class="dropdown">
+    <div class="dropdown-header">Basic Physics</div>
+    <div class="dropdown-content">
+      <div class="slider-container">
+        <label for="subdivisions">Subdivisions: <span id="subdivisionsValue">20</span></label>
+        <input type="range" id="subdivisions" min="5" max="250" value="20" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      <div class="slider-container">
+        <label for="windSpeed">Wind Speed (MPH): <span id="windSpeedValue">5</span></label>
+        <input type="range" id="windSpeed" min="0" max="5000" step="1" value="5" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      <div class="slider-container">
+        <label for="windAngle">Wind Angle (degrees): <span id="windAngleValue">0</span></label>
+        <input type="range" id="windAngle" min="0" max="360" step="1" value="0" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      <div class="slider-container">
+        <label for="gravity">Gravity Multiplier: <span id="gravityValue">3.0</span></label>
+        <input type="range" id="gravity" min="0" max="50" step="0.1" value="3.0" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      <div class="slider-container">
+        <label for="rigidity">Rigidity: <span id="rigidityValue">1</span></label>
+        <input type="range" id="rigidity" min="1" max="10" value="1" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      <div class="slider-container">
+        <label for="chaos">Wind Gusts: <span id="chaosValue">0</span></label>
+        <input type="range" id="chaos" min="0" max="100" value="0" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      <div class="slider-container">
+        <label for="damping">String Damping: <span id="dampingValue">0.1</span></label>
+        <input type="range" id="damping" min="0" max="1" step="0.01" value="0.1" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      
+      <div class="slider-container">
+        <label for="friction">Surface Friction: <span id="frictionValue">0.1</span></label>
+        <input type="range" id="friction" min="0" max="1" step="0.01" value="0.1" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      
+      <div class="slider-container">
+        <label for="bounce">Bounce: <span id="bounceValue">0.5</span></label>
+        <input type="range" id="bounce" min="0" max="1" step="0.01" value="0.5" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+      
+      <div class="slider-container">
+        <label for="massDistribution">Mass Distribution: <span id="massDistributionValue">1.0</span></label>
+        <input type="range" id="massDistribution" min="0.1" max="5" step="0.1" value="1.0" style="background: linear-gradient(90deg, #00ffff, #0000ff);">
+      </div>
+    </div>
+  </div>
+
+  <div class="dropdown">
+    <div class="dropdown-header" style="background: linear-gradient(45deg, #00bcd4, #4caf50);">Advanced Physics</div>
+    <div class="dropdown-content">
+      <div class="slider-container">
+        <label for="elasticity">Elasticity: <span id="elasticityValue">0.99</span></label>
+        <input type="range" id="elasticity" min="0" max="1" step="0.01" value="0.99">
+      </div>
+      <div class="slider-container">
+        <label for="airResistance">Air Resistance: <span id="airResistanceValue">0.02</span></label>
+        <input type="range" id="airResistance" min="0" max="0.1" step="0.001" value="0.02">
+      </div>
+      <div class="slider-container">
+        <label for="tension">String Tension: <span id="tensionValue">1.0</span></label>
+        <input type="range" id="tension" min="0.1" max="3" step="0.1" value="1.0">
+      </div>
+      <select id="weightDistribution" class="slider-container" style="background: linear-gradient(90deg, #00BCD4, #4CAF50); color: white; border: none; padding: 5px;">
+        <option value="uniform">Uniform Weight</option>
+        <option value="top-heavy">Top Heavy</option>
+        <option value="bottom-heavy">Bottom Heavy</option>
+        <option value="center-heavy">Center Heavy</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="controls effects">
+  <div class="dropdown">
+    <div class="dropdown-header" style="background: linear-gradient(45deg, #800080, #008000);">Satisfying Effects</div>
+    <div class="dropdown-content">
+      <div class="slider-container">
+        <label for="effectIntensity">Effect Intensity: <span id="effectIntensityValue">1.0</span></label>
+        <input type="range" id="effectIntensity" min="0" max="2" step="0.1" value="1.0" style="background: linear-gradient(90deg, #800080, #008000);">
+      </div>
+      <button class="satisfying" onclick="toggleWaveEffect()" style="background: linear-gradient(45deg, #800080, #008000)">Wave Effect</button>
+      <button class="satisfying" onclick="toggleRipple()" style="background: linear-gradient(45deg, #800080, #008000)">Ripple Effect</button>
+      <button class="satisfying" onclick="togglePulse()" style="background: linear-gradient(45deg, #800080, #008000)">Pulse Effect</button>
+      <button class="satisfying" onclick="toggleHarmony()" style="background: linear-gradient(45deg, #800080, #008000)">Harmony Mode</button>
+      <button class="satisfying" onclick="toggleGlitter()" style="background: linear-gradient(45deg, #800080, #008000)">Glitter Effect</button>
+      <button class="satisfying" onclick="toggleRippleWaves()" style="background: linear-gradient(45deg, #800080, #008000)">Ripple Waves</button>
+      <button class="satisfying" onclick="toggleShimmer()" style="background: linear-gradient(45deg, #800080, #008000)">Shimmer Effect</button>
+      <button class="satisfying" onclick="toggleVortex()" style="background: linear-gradient(45deg, #800080, #008000)">Vortex Effect</button>
+      <button class="satisfying" onclick="toggleGlowPulse()" style="background: linear-gradient(45deg, #800080, #008000)">Glow Pulse</button>
+      <button class="satisfying" onclick="toggleSparkle()" style="background: linear-gradient(45deg, #800080, #008000)">Sparkle Effect</button>
+      <button class="satisfying" onclick="toggleSwirlWave()" style="background: linear-gradient(45deg, #800080, #008000)">Swirl Wave</button>
+      <button class="satisfying" onclick="toggleElasticSnap()" style="background: linear-gradient(45deg, #800080, #008000)">Elastic Snap</button>
+    </div>
+  </div>
+
+  <div class="dropdown">
+    <div class="dropdown-header" style="background: linear-gradient(45deg, #ff69b4, #ff0000);">Destructive Effects</div>
+    <div class="dropdown-content">
+      <button class="destructive" onclick="toggleRipMode()">Rip Mode</button>
+      <button class="destructive" onclick="toggleSliceMode()">Slice Mode</button>
+      <button class="destructive" onclick="toggleDisintegrate()">Disintegrate</button>
+      <button class="destructive" onclick="toggleShatter()">Shatter</button>
+      <button class="destructive" onclick="toggleUnravel()">Unravel</button>
+      <button class="destructive" onclick="toggleBurn()">Burn</button>
+      <button class="destructive" onclick="toggleBulletShot()">Bullet Shot</button>
+      <button class="destructive" onclick="toggleExplosiveBullets()">Explosive Bullets</button>
+      <button class="destructive" onclick="toggleLaser()">Laser Beam</button>
+      <button class="destructive" onclick="toggleDisintegrationRay()">Disintegration Ray</button>
+      <button class="destructive" onclick="toggleBall()">Bouncy Ball</button>
+    </div>
+  </div>
+</div>
+<div class="dropdown bug-fix-notice">
+  <div class="dropdown-header" style="background: linear-gradient(45deg, #795548, #4e342e);">Bug Fixes &amp; Updates</div>
+  <div class="dropdown-content">
+  Ultra Revamp 2.8v<br>
+  -Added more Pins.<br>
+  -Added more Subdivisions.<br>
+  -Added new color variations.<br>
+  -Added a new touch of the sliders.<br>
+  -Made ball grabbable.<br>
+  -New color variations for buttons.<br>
+  -Made the Wind speed cap from 200 mph to 5000 mph.<br>
+  -Added 15 more effects.<br>
+  -Added 4 more Basic Physics sliders.<br>
+  -etc.
+</div>
+</div>
+<canvas id="canvas"></canvas>
+<audio id="explosionSound" preload="auto">
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEAAABVgANTU1NTU1Q0NDQ0NDUFBQUFBQXl5eXl5ea2tra2tra3l5eXl5eYaGhoaGhoaGvr6+vr6+vr6+8vLy8vLzKysrKysrX19fX19fX5eXl5eXl8vLy8vLy////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQCgAAAAAAAAAVY82AhbwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAALACwAAP/AADwQKVE9YWDGPkQWpT66yk4+zIiYPoTUaT3tnU487uNhOvEmQDaCm1Yz1c6DPjbs6zdZVBk0pdGpMzxF/+MYxA8L0DU0AP+0ANkwmYaAMkOKDDjmYoMtwNMyDxMzDHE/MEsLow9AtDnBlQgDhTx+Eye0GgMHoCyDC8gUswJcMVMABBGj/+MYxBoK4DVpQP8iAtVmDk7LPwk4Vidby6K+8y8O8zy/1v48DLzzqx58sXY/O/nY/86Xa//PXY/9dlv/91vv/64/f/xn/+MYxCkJ4DVcAP8MAO9J9dlv/+4164/f/xn/9R/r8n6//2//K+vR5/0vl8q3Kv869+r6/N962k82zqef/9ZwIA0FAZUw/+MYxDwKKDVkAP8eAF2MGwbv/ljGMYxjH8YxjGMYxjGMYxjGMYxjGMYxjGMYxjGMYxjGMYxjGMYxhM/+MYxGUJyDVwAP8MAGY/i+L4vi+L4vi+L4vi+L4vi+L4vi+L4vi+L4vi+L4vi+L4vi+L4vi+L4vi+L4vi+" type="audio/mpeg">
+</audio>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth - 40;
+canvas.height = window.innerHeight - 40;
+
+let windSpeed = 0.05;
+let windAngle = 0; // In degrees
+let clothSubdivisions = 20;
+let rigidityIterations = 1;
+let gravity = 3.0;
+let elasticity = 0.99;
+let airResistance = 0.02;
+let stringTension = 1.0;
+let weightDistribution = 'uniform';
+let windGusts = 0;
+
+// Add breakable tension constants
+const TENSION_BREAK_THRESHOLD = 15; // Maximum tension force before string breaks
+const MIN_LENGTH_MULTIPLIER = 0.8; // How much a string can compress before breaking
+const MAX_LENGTH_MULTIPLIER = 1.5; // How much a string can stretch before breaking
+
+let showPoints = true;
+let rainbowMode = false;
+let antiGravityEnabled = false;
+let tornadoMode = false;
+
+let waveEffectEnabled = false;
+let rippleEffectEnabled = false;
+let pulseEffectEnabled = false;
+let harmonyMode = false;
+
+// New effect state variables
+let glitterEffect = false;
+let rippleWavesEffect = false;
+let shimmerEffect = false;
+let vortexEffect = false;
+
+// New satisfying effects
+let glowPulseEffect = false;
+let sparkleEffect = false;
+let swirlWaveEffect = false;
+let elasticSnapEffect = false;
+
+let ripMode = false;
+let sliceMode = false;
+let slicing = false;
+let lastSliceX = 0;
+let lastSliceY = 0;
+
+let draggedPoint = null;
+let mouseX = 0;
+let mouseY = 0;
+
+let draggingBall = false; // Add this variable
+
+let warningShown = false; // Variable to track if the warning has been shown
+
+// Add Effect Intensity Variable
+let effectIntensity = 1.0;
+
+// New physics variables
+let damping = 0.1;
+let friction = 0.1;
+let bounce = 0.5;
+let massDistribution = 1.0;
+
+// Update the subdivisions input max value
+document.getElementById('subdivisions').max = "250"; // Increased from 150 to 250
+
+// Add event listener for the subdivisions slider
+document.getElementById('subdivisions').addEventListener('input', (e) => {
+  updateSubdivisions(parseInt(e.target.value));
+});
+
+// Updated the updateSubdivisions function
+function updateSubdivisions(value) {
+  if (value > 80 && !warningShown) {
+    // Disable slider while warning is shown
+    document.getElementById('subdivisions').disabled = true;
+    
+    warningShown = true;
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(45deg, #ff4444, #ff0000);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      max-width: 400px;
+    `;
+    
+    // Add stronger warning for higher subdivisions
+    const load = Math.round(value * value / 400);
+    const memory = Math.round(value * value / 1000);
+    const warning = value > 150 ? 
+      `<p style="color: #ff8888; font-weight: bold">EXTREME PERFORMANCE IMPACT</p>` : 
+      '';
+    
+    popup.innerHTML = `
+      <h3 style="margin-top: 0;">High Performance Mode Required</h3>
+      ${warning}
+      <p>Using ${value} subdivisions will:</p>
+      <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+        <li>Increase physics calculations by ${load}x</li>
+        <li>May require ${memory}MB+ additional memory</li>
+        <li>Could impact system performance</li>
+      </ul>
+      <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+        <button onclick="this.parentElement.parentElement.remove(); setSubdivisions(${value}); enableSlider();" 
+                style="background: linear-gradient(45deg, #4CAF50, #45a049); padding: 10px 20px; border: none; color: white; border-radius: 5px; cursor: pointer; transition: all 0.3s ease;">
+          Enable ${value > 150 ? 'Extreme' : 'High'} Performance Mode
+        </button>
+        <button onclick="this.parentElement.parentElement.remove(); setSubdivisions(80); enableSlider();" 
+                style="background: linear-gradient(45deg, #2196F3, #1976D2); padding: 10px 20px; border: none; color: white; border-radius: 5px; cursor: pointer; transition: all 0.3s ease;">
+          Stay in Standard Mode
+        </button>
+      </div>
+      <p style="font-size: 0.8em; margin-top: 15px; color: #ffcccc;">
+        ${value > 150 ? 'Warning: High-end hardware strongly recommended!' : 'System Requirements: Modern browser, 8GB+ RAM recommended'}
+      </p>
+    `;
+    
+    document.body.appendChild(popup);
+    return;
+  }
+  
+  // Add extreme warning threshold at 200 subdivisions
+  if (value > 200) {
+    const extremeWarning = document.createElement('div');
+    extremeWarning.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(45deg, #ff0000, #990000);
+      padding: 15px;
+      border-radius: 8px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      z-index: 1000;
+      animation: fadeIn 0.5s ease;
+      box-shadow: 0 0 20px rgba(255,0,0,0.3);
+    `;
+    extremeWarning.innerHTML = `⚠️ EXTREME MODE: ${value} subdivisions<br>
+                               ${Math.round(value * value / 200)}x physics load<br>
+                               Performance will be severely impacted`;
+    document.body.appendChild(extremeWarning);
+    setTimeout(() => extremeWarning.remove(), 5000);
+  }
+  
+  setSubdivisions(value);
+}
+
+function setSubdivisions(value) {
+  clothSubdivisions = parseInt(value);
+  document.getElementById('subdivisions').value = value;
+  document.getElementById('subdivisionsValue').textContent = value;
+  createCloth();
+}
+
+// Add this function near the other utility functions
+function enableSlider() {
+  document.getElementById('subdivisions').disabled = false;
+}
+
+function removeNearbySticks(x, y, radius) {
+  sticks = sticks.filter(stick => {
+    // Calculate midpoint of stick
+    const midX = (stick.p1.x + stick.p2.x) / 2;
+    const midY = (stick.p1.y + stick.p2.y) / 2;
+    
+    // Calculate distance from point to stick midpoint
+    const dx = midX - x;
+    const dy = midY - y;
+    const distance = Math.hypot(dx, dy);
+    
+    // Additional check for sticks that cross the radius
+    const stickLength = Math.hypot(stick.p2.x - stick.p1.x, stick.p2.y - stick.p1.y);
+    const closeToEnd1 = Math.hypot(stick.p1.x - x, stick.p1.y - y) < radius;
+    const closeToEnd2 = Math.hypot(stick.p2.x - x, stick.p2.y - y) < radius;
+    
+    // Keep stick if it's far enough away
+    return distance > radius && !closeToEnd1 && !closeToEnd2;
+  });
+}
+
+// Add this helper function for slicing cloth
+function sliceCloth(x1, y1, x2, y2) {
+  sticks = sticks.filter(stick => {
+    // Line segment intersection check
+    const x3 = stick.p1.x;
+    const y3 = stick.p1.y;
+    const x4 = stick.p2.x;
+    const y4 = stick.p2.y;
+    
+    const denominator = ((x2 - x1) * (y4 - y3) - (y2 - y1) * (x4 - x3));
+    if (denominator === 0) return true; // Lines are parallel
+    
+    const t = ((x1 - x3) * (y4 - y3) - (y1 - y3) * (x4 - x3)) / denominator;
+    const u = -((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
+    
+    // Check if lines intersect within their segments
+    return t < 0 || t > 1 || u < 0 || u > 1;
+  });
+}
+
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.px = x;
+    this.py = y;
+    this.vx = 0;
+    this.vy = 0;
+    this.pinned = false;
+    this.mass = 0.01 / (clothSubdivisions / 20);
+  }
+
+  update(delta) {
+    if (this === draggedPoint) {
+      this.x = mouseX;
+      this.y = mouseY;
+      this.px = mouseX;
+      this.py = mouseY;
+      return;
+    }
+
+    if (this.pinned) return;
+
+    let vx = (this.x - this.px) * elasticity;
+    let vy = (this.y - this.py) * elasticity;
+
+    vx *= (1 - airResistance);
+    vy *= (1 - airResistance);
+
+    this.px = this.x;
+    this.py = this.y;
+
+    this.x += vx;
+    this.y += vy;
+
+    const gravityForce = antiGravityEnabled ? -gravity : gravity;
+    this.y += gravityForce * 9.81 * delta * delta * 1000 * this.mass;
+
+    // Add damping to velocity calculations
+    this.vx *= (1 - damping);
+    this.vy *= (1 - damping);
+
+    if (windEnabled) {
+      const time = Date.now() * 0.001;
+      const windVariation = Math.sin(this.y * 0.02 + time * 1.5);
+      let windStrength = windSpeed * (1 + windVariation * 0.8);
+      
+      // Add wind angle calculations
+      const windRad = windAngle * Math.PI / 180;
+      const windX = Math.cos(windRad);
+      const windY = Math.sin(windRad);
+      
+      // Add position bounds checking for extreme wind
+      const maxWindForce = 500;
+      windStrength = Math.min(windStrength, maxWindForce);
+      
+      if (tornadoMode) {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const dx = this.x - centerX;
+        const dy = this.y - centerY;
+        const distance = Math.hypot(dx, dy);
+        const angle = Math.atan2(dy, dx) + delta * 5;
+        windStrength *= 2;
+        this.x += Math.cos(angle) * windStrength * (distance * 0.01);
+        this.y += Math.sin(angle) * windStrength * (distance * 0.01);
+      } else {
+        // Modified wind application with angle
+        this.x += windX * windStrength * delta * 60 * this.mass;
+        this.y += windY * windStrength * delta * 60 * this.mass;
+      }
+      
+      // Keep existing position bounds checking
+      if (this.x < 0) this.x = 0;
+      if (this.x > canvas.width) this.x = canvas.width;
+      if (this.y < 0) this.y = 0;
+      if (this.y > canvas.height) this.y = canvas.height;
+
+      if (windGusts > 0) {
+        this.x += (Math.random() - 0.5) * windGusts * delta * 50;
+        this.y += (Math.random() - 0.5) * windGusts * delta * 50;
+      }
+    }
+  }
+}
+
+class Stick {
+  constructor(p1, p2) {
+    this.p1 = p1;
+    this.p2 = p2;
+    this.length = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+  }
+
+  update() {
+    let dx = this.p2.x - this.p1.x;
+    let dy = this.p2.y - this.p1.y;
+    let distance = Math.hypot(dx, dy);
+    
+    if (distance < 0.0001) distance = 0.0001;
+    
+    // Check for breaking conditions
+    if (distance < this.length * MIN_LENGTH_MULTIPLIER || 
+        distance > this.length * MAX_LENGTH_MULTIPLIER) {
+      return false; // Signal this stick should be removed
+    }
+    
+    let difference = this.length - distance;
+    let percent = (difference / distance) / 2 * stringTension;
+    
+    // Calculate tension force
+    let tensionForce = Math.abs(difference * stringTension);
+    if (tensionForce > TENSION_BREAK_THRESHOLD) {
+      return false; // Break if tension exceeds threshold
+    }
+    
+    let offsetX = dx * percent;
+    let offsetY = dy * percent;
+
+    const maxOffset = 10;
+    const offsetMagnitude = Math.hypot(offsetX, offsetY);
+    if (offsetMagnitude > maxOffset) {
+      const scale = maxOffset / offsetMagnitude;
+      offsetX *= scale;
+      offsetY *= scale;
+    }
+
+    if (!this.p1.pinned) {
+      this.p1.x -= offsetX;
+      this.p1.y -= offsetY;
+    }
+    if (!this.p2.pinned) {
+      this.p2.x += offsetX;
+      this.p2.y += offsetY;
+    }
+    
+    return true; // Keep this stick
+  }
+}
+
+class Ball {
+  constructor() {
+    this.x = canvas.width / 2;
+    this.y = canvas.height / 2;
+    this.radius = 15;
+    this.vx = (Math.random() - 0.5) * 20;
+    this.vy = -15;
+    this.active = false;
+    this.gravity = 0.8;
+    this.bounce = 0.7;
+  }
+
+  update(delta) {
+    if (!this.active) return;
+
+    this.vy += this.gravity;
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x < this.radius) {
+      this.x = this.radius;
+      this.vx *= -this.bounce;
+    }
+    if (this.x > canvas.width - this.radius) {
+      this.x = canvas.width - this.radius;
+      this.vx *= -this.bounce;
+    }
+    if (this.y < this.radius) {
+      this.y = this.radius;
+      this.vy *= -this.bounce;
+    }
+    if (this.y > canvas.height - this.radius) {
+      this.y = canvas.height - this.radius;
+      this.vy *= -this.bounce;
+    }
+
+    for (let p of points) {
+      const dx = p.x - this.x;
+      const dy = p.y - this.y;
+      const distance = Math.hypot(dx, dy);
+      
+      if (distance < this.radius + 5) {
+        removeNearbySticks(p.x, p.y, this.radius * 1.5);
+        
+        const force = 2;
+        if (!p.pinned) {
+          p.x += (dx / distance) * force;
+          p.y += (dy / distance) * force;
+        }
+      }
+    }
+  }
+
+  draw(ctx) {
+    if (!this.active) return;
+    
+    ctx.beginPath();
+    ctx.fillStyle = '#ff4444';
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  containsPoint(x, y) {
+    return Math.hypot(this.x - x, this.y - y) <= this.radius;
+  }
+  
+  drag(x, y) {
+    this.x = x;
+    this.y = y;
+    // Reset velocity when dragging
+    this.vx = 0;
+    this.vy = 0;
+  }
+}
+
+let windEnabled = false;
+let pinMode = false;
+let points = [];
+let sticks = [];
+let ball = new Ball();
+
+const fabricPresets = {
+  normal: {
+    elasticity: 0.99,
+    airResistance: 0.02,
+    tension: 1.0,
+    mass: 0.01
+  },
+  silk: {
+    elasticity: 0.995,
+    airResistance: 0.03,
+    tension: 0.8,
+    mass: 0.005
+  },
+  denim: {
+    elasticity: 0.7,
+    airResistance: 0.01,
+    tension: 1.5,
+    mass: 0.02
+  }
+};
+
+function createCloth() {
+  points = [];
+  sticks = [];
+
+  const pinSpacing = canvas.width * 0.3; // Distance between pins stays constant
+  const desiredWidth = canvas.width * 0.3;  // Fixed width
+  const desiredHeight = canvas.height * 0.6; // Fixed height
+  const spacingX = desiredWidth / (clothSubdivisions - 1);
+  const spacingY = desiredHeight / (clothSubdivisions - 1);
+
+  const startX = canvas.width / 2 - pinSpacing / 2;
+  const originalWidth = pinSpacing; // Width between pins stays constant
+
+  for (let y = 0; y < clothSubdivisions; y++) {
+    for (let x = 0; x < clothSubdivisions; x++) {
+      const xPos = startX + (x / (clothSubdivisions - 1)) * originalWidth;
+      const yPos = canvas.height / 8 + y * spacingY;
+
+      let p = new Point(xPos, yPos);
+      
+      if (y === 0 && (x === 0 || x === clothSubdivisions - 1 || x % 4 === 0)) {
+        p.pinned = true;
+        if (x === 0) {
+          p.x = startX;
+        } else if (x === clothSubdivisions - 1) {
+          p.x = startX + pinSpacing;
+        }
+      }
+      points.push(p);
+    }
+  }
+
+  for (let y = 0; y < clothSubdivisions; y++) {
+    for (let x = 0; x < clothSubdivisions; x++) {
+      if (x < clothSubdivisions - 1)
+        sticks.push(new Stick(
+          points[y * clothSubdivisions + x],
+          points[y * clothSubdivisions + x + 1]
+        ));
+      if (y < clothSubdivisions - 1)
+        sticks.push(new Stick(
+          points[y * clothSubdivisions + x],
+          points[(y + 1) * clothSubdivisions + x]
+        ));
+    }
+  }
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+
+  points.forEach((p, i) => {
+    const baseWeight = fabricPresets[document.getElementById('fabricType').value].mass / (clothSubdivisions / 20);
+    let weightMultiplier = 1;
+    
+    switch(weightDistribution) {
+      case 'top-heavy':
+        weightMultiplier = 1 + (1 - p.y / canvas.height) * 2;
+        break;
+      case 'bottom-heavy':
+        weightMultiplier = 1 + (p.y / canvas.height) * 2;
+        break;
+      case 'center-heavy':
+        const distanceFromCenter = Math.hypot(p.x - centerX, p.y - centerY);
+        const maxDistance = Math.hypot(canvas.width/2, canvas.height/2);
+        weightMultiplier = 1 + (1 - distanceFromCenter/maxDistance) * 2;
+        break;
+    }
+    
+    p.mass = baseWeight * weightMultiplier;
+  });
+}
+
+function update(delta) {
+  delta = Math.min(delta, 0.016);
+
+  for (let i = 0; i < points.length; i++) {
+    points[i].update(delta);
+  }
+
+  ball.update(delta);
+  
+  // Add friction and bounce to collision handling
+  points.forEach(p => {
+    if (!p.pinned) {
+      if (p.y >= canvas.height) {
+        p.vy *= -bounce;
+        p.vx *= (1 - friction);
+      }
+      if (p.x <= 0 || p.x >= canvas.width) {
+        p.vx *= -bounce;
+        p.vy *= (1 - friction);
+      }
+    }
+  });
+
+  const minIterations = 3;
+  const iterations = Math.max(minIterations, rigidityIterations);
+  
+  for (let iter = 0; iter < iterations; iter++) {
+    // Create a new array of sticks that haven't broken
+    sticks = sticks.filter(stick => stick.update());
+  }
+
+  const maxVelocity = 20;
+  for (let i = 0; i < points.length; i++) {
+    let p = points[i];
+    let vx = p.x - p.px;
+    let vy = p.y - p.py;
+    let velocity = Math.hypot(vx, vy);
+    
+    if (velocity > maxVelocity) {
+      let scale = maxVelocity / velocity;
+      p.x = p.px + vx * scale;
+      p.y = p.py + vy * scale;
+    }
+
+    if (p.x < 0) p.x = 0;
+    if (p.x > canvas.width) p.x = canvas.width;
+    if (p.y < 0) p.y = 0;
+    if (p.y > canvas.height) p.y = canvas.height;
+  }
+
+  // Apply satisfying effects
+  applyWaveEffect();
+  applyRippleEffect();
+  applyPulseEffect();
+  applyHarmonyEffect();
+  applyGlitterEffect();
+  applyRippleWaves();
+  applyShimmerEffect();
+  applyVortexEffect();
+  applyGlowPulse();
+  applySwirlWave();
+  applyElasticSnap();
+}
+
+// Add these functions after the existing update() function
+
+function applyWaveEffect() {
+  if (!waveEffectEnabled) return;
+  const time = Date.now() * 0.001;
+  points.forEach((p, i) => {
+    if (!p.pinned) {
+      const wave = Math.sin(p.x * 0.02 + time * 2) * 20 * effectIntensity;
+      p.y += wave - (p.y - p.py);
+    }
+  });
+}
+
+function applyRippleEffect() {
+  if (!rippleEffectEnabled) return;
+  const time = Date.now() * 0.001;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  
+  points.forEach(p => {
+    if (!p.pinned) {
+      const dx = p.x - centerX;
+      const dy = p.y - centerY;
+      const distance = Math.hypot(dx, dy);
+      const wave = Math.sin(distance * 0.05 - time * 3) * 15 * effectIntensity;
+      p.x += (dx / distance) * wave;
+      p.y += (dy / distance) * wave;
+    }
+  });
+}
+
+function applyPulseEffect() {
+  if (!pulseEffectEnabled) return;
+  const time = Date.now() * 0.001;
+  const pulse = Math.sin(time * 2) * 0.2 * effectIntensity;
+  
+  sticks.forEach(stick => {
+    stick.length = stick.length * (1 + pulse);
+  });
+}
+
+function applyHarmonyEffect() {
+  if (!harmonyMode) return;
+  const time = Date.now() * 0.001;
+  points.forEach((p, i) => {
+    if (!p.pinned) {
+      const angle = i * 0.1 + time;
+      p.x += Math.sin(angle) * 2 * effectIntensity;
+      p.y += Math.cos(angle) * 2 * effectIntensity;
+    }
+  });
+}
+
+function applyGlitterEffect() {
+  if (!glitterEffect) return;
+  points.forEach(p => {
+    if (!p.pinned && Math.random() < 0.1) {
+      const sparkle = document.createElement('div');
+      sparkle.style.cssText = `
+        position: fixed;
+        left: ${p.x}px;
+        top: ${p.y}px;
+        width: 4px;
+        height: 4px;
+        background: white;
+        border-radius: 50%;
+        pointer-events: none;
+        animation: sparkle 0.8s ease-out forwards;
+      `;
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 800);
+    }
+  });
+}
+
+function applyRippleWaves() {
+  if (!rippleWavesEffect) return;
+  const time = Date.now() * 0.001;
+  points.forEach((p, i) => {
+    if (!p.pinned) {
+      const wave1 = Math.sin(p.x * 0.05 + time * 2) * 10 * effectIntensity;
+      const wave2 = Math.cos(p.y * 0.05 + time * 2) * 10 * effectIntensity;
+      p.x += wave1;
+      p.y += wave2;
+    }
+  });
+}
+
+function applyShimmerEffect() {
+  if (!shimmerEffect) return;
+  const time = Date.now() * 0.001;
+  points.forEach((p, i) => {
+    if (!p.pinned) {
+      const shimmer = Math.sin(i * 0.1 + time * 3) * 5 * effectIntensity;
+      p.x += shimmer;
+    }
+  });
+}
+
+function applyVortexEffect() {
+  if (!vortexEffect) return;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const time = Date.now() * 0.001;
+  
+  points.forEach(p => {
+    if (!p.pinned) {
+      const dx = p.x - centerX;
+      const dy = p.y - centerY;
+      const distance = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx) + time * effectIntensity;
+      const force = Math.min(20, 100 / distance);
+      p.x += Math.cos(angle) * force;
+      p.y += Math.sin(angle) * force;
+    }
+  });
+}
+
+function applyGlowPulse() {
+  if (!glowPulseEffect) return;
+  const time = Date.now() * 0.001;
+  ctx.shadowBlur = Math.abs(Math.sin(time * 2)) * 20 * effectIntensity;
+  ctx.shadowColor = 'white';
+}
+
+function applySwirlWave() {
+  if (!swirlWaveEffect) return;
+  const time = Date.now() * 0.001;
+  points.forEach((p, i) => {
+    if (!p.pinned) {
+      const angle = Math.atan2(p.y - canvas.height/2, p.x - canvas.width/2);
+      const distance = Math.hypot(p.x - canvas.width/2, p.y - canvas.height/2);
+      const wave = Math.sin(distance * 0.02 - time * 2) * 15 * effectIntensity;
+      p.x += Math.cos(angle) * wave;
+      p.y += Math.sin(angle) * wave;
+    }
+  });
+}
+
+function applyElasticSnap() {
+  if (!elasticSnapEffect) return;
+  const time = Date.now() * 0.001;
+  sticks.forEach(stick => {
+    const snap = Math.sin(time * 3) > 0.9 ? 0.8 : 1.0;
+    stick.length *= snap;
+  });
+}
+
+// Add this CSS to the style section
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes sparkle {
+    0% { transform: scale(0); opacity: 1; }
+    50% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(0); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+
+// Replace the windSpeed event listener code with this updated version
+document.getElementById('windSpeed').addEventListener('input', (e) => {
+  const mphValue = parseInt(e.target.value);
+  windSpeed = mphToSimulation(mphValue);
+  document.getElementById('windSpeedValue').textContent = mphValue;
+  
+  // Remove pin breaking logic and only apply forces to non-pinned points
+  if (mphValue > 1200) {
+    points.forEach(p => {
+      if (!p.pinned) { // Only affect non-pinned points
+        // Add explosive force to free points
+        const force = 50 + Math.random() * 50;
+        p.vx += (Math.random() - 0.5) * force;
+        p.vy += (Math.random() - 0.3) * force;
+        
+        // Visual feedback only for free points
+        const ripEffect = document.createElement('div');
+        ripEffect.style.cssText = `
+          position: fixed;
+          left: ${p.x}px;
+          top: ${p.y}px;
+          width: 20px;
+          height: 20px;
+          background: radial-gradient(circle, #fff, transparent);
+          pointer-events: none;
+          animation: ripExplosion 0.5s ease-out forwards;
+        `;
+        document.body.appendChild(ripEffect);
+        setTimeout(() => ripEffect.remove(), 500);
+      }
+    });
+  }
+  
+  // Keep the warning display for high wind speeds
+  if (mphValue > 1000) {
+    if (!document.querySelector('.wind-warning')) {
+      const warning = document.createElement('div');
+      warning.className = 'wind-warning';
+      warning.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #ff0000, #ff6b6b);
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        z-index: 1000;
+        animation: fadeIn 0.5s ease;
+        box-shadow: 0 2px 10px rgba(255,0,0,0.3);
+      `;
+      warning.textContent = `⚠️ Extreme Wind Speed: ${mphValue} MPH`;
+      document.body.appendChild(warning);
+      
+      setTimeout(() => {
+        if (warning.parentNode) {
+          warning.remove();
+        }
+      }, 3000);
+    }
+  }
+});
+
+document.getElementById('windAngle').addEventListener('input', (e) => {
+  windAngle = parseInt(e.target.value);
+  document.getElementById('windAngleValue').textContent = windAngle;
+});
+
+document.getElementById('effectIntensity').addEventListener('input', (e) => {
+  effectIntensity = parseFloat(e.target.value);
+  document.getElementById('effectIntensityValue').textContent = effectIntensity.toFixed(1);
+});
+
+document.getElementById('damping').addEventListener('input', (e) => {
+  damping = parseFloat(e.target.value);
+  document.getElementById('dampingValue').textContent = damping.toFixed(2);
+});
+
+document.getElementById('friction').addEventListener('input', (e) => {
+  friction = parseFloat(e.target.value);
+  document.getElementById('frictionValue').textContent = friction.toFixed(2);
+});
+
+document.getElementById('bounce').addEventListener('input', (e) => {
+  bounce = parseFloat(e.target.value);
+  document.getElementById('bounceValue').textContent = bounce.toFixed(2);
+});
+
+document.getElementById('massDistribution').addEventListener('input', (e) => {
+  massDistribution = parseFloat(e.target.value);
+  document.getElementById('massDistributionValue').textContent = massDistribution.toFixed(1);
+  updateMassDistribution();
+});
+
+// Add new physics function
+function updateMassDistribution() {
+  points.forEach((p) => {
+    const relativeHeight = p.y / canvas.height;
+    p.mass = (0.01 / (clothSubdivisions / 20)) * Math.pow(relativeHeight, massDistribution - 1);
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  let strokeColor = '#fff';
+  let lineWidth = 2;
+
+  // Set fabric-specific rendering styles
+  switch(document.getElementById('fabricType').value) {
+    case 'silk':
+      ctx.globalAlpha = 0.8;
+      strokeColor = '#f0f0f0';
+      lineWidth = 1;
+      break;
+    case 'denim':
+      strokeColor = '#405785';
+      lineWidth = 3;
+      break;
+  }
+
+  if (rainbowMode) {
+    strokeColor = `hsl(${Date.now() * 0.1 % 360}, 100%, 50%)`;
+  }
+
+  ctx.strokeStyle = strokeColor;
+  ctx.lineWidth = lineWidth;
+
+  ctx.beginPath();
+  for (let i = 0; i < sticks.length; i++) {
+    let s = sticks[i];
+    ctx.moveTo(s.p1.x, s.p1.y);
+    ctx.lineTo(s.p2.x, s.p2.y);
+  }
+  ctx.stroke();
+
+  if (showPoints) {
+    for (let i = 0; i < points.length; i++) {
+      let p = points[i];
+      ctx.beginPath();
+      if (rainbowMode) {
+        ctx.fillStyle = `hsl(${(i * 360 / points.length + Date.now() * 0.1) % 360}, 100%, 50%)`;
+      } else {
+        ctx.fillStyle = p.pinned ? '#ff0000' : '#ffffff';
+      }
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  ball.draw(ctx);
+}
+
+let lastTime = 0;
+function animate(time) {
+  let delta = (time - lastTime) / 1000;
+  lastTime = time;
+
+  update(delta);
+  draw();
+  requestAnimationFrame(animate);
+}
+
+function toggleWind() {
+  windEnabled = !windEnabled;
+}
+
+function resetCloth() {
+  windSpeed = 0.05;
+  windAngle = 0;
+  clothSubdivisions = 20;
+  rigidityIterations = 1;
+  gravity = 3.0;
+  elasticity = 0.99;
+  airResistance = 0.02;
+  stringTension = 1.0;
+  weightDistribution = 'uniform';
+  windGusts = 0;
+
+  // Reset new physics variables
+  damping = 0.1;
+  friction = 0.1;
+  bounce = 0.5;
+  massDistribution = 1.0;
+
+  windEnabled = false;
+  pinMode = false;
+  showPoints = true;
+  rainbowMode = false;
+  antiGravityEnabled = false;
+  tornadoMode = false;
+  waveEffectEnabled = false;
+  rippleEffectEnabled = false;
+  pulseEffectEnabled = false;
+  harmonyMode = false;
+  glitterEffect = false;
+  rippleWavesEffect = false;
+  shimmerEffect = false;
+  vortexEffect = false;
+  ripMode = false;
+  sliceMode = false;
+  ball.active = false;
+
+  // Reset new satisfying effects
+  glowPulseEffect = false;
+  sparkleEffect = false;
+  swirlWaveEffect = false;
+  elasticSnapEffect = false;
+
+  document.getElementById('subdivisions').value = clothSubdivisions;
+  document.getElementById('subdivisionsValue').textContent = clothSubdivisions;
+  
+  document.getElementById('windSpeed').value = 5;
+  document.getElementById('windSpeedValue').textContent = 5;
+  
+  document.getElementById('windAngle').value = 0;
+  document.getElementById('windAngleValue').textContent = 0;
+  
+  document.getElementById('gravity').value = gravity;
+  document.getElementById('gravityValue').textContent = gravity;
+  
+  document.getElementById('rigidity').value = rigidityIterations;
+  document.getElementById('rigidityValue').textContent = rigidityIterations;
+  
+  document.getElementById('chaos').value = 0;
+  document.getElementById('chaosValue').textContent = 0;
+  
+  document.getElementById('elasticity').value = elasticity;
+  document.getElementById('elasticityValue').textContent = elasticity.toFixed(2);
+  
+  document.getElementById('airResistance').value = airResistance;
+  document.getElementById('airResistanceValue').textContent = airResistance.toFixed(3);
+  
+  document.getElementById('tension').value = stringTension;
+  document.getElementById('tensionValue').textContent = stringTension.toFixed(1);
+  
+  document.getElementById('weightDistribution').value = 'uniform';
+  document.getElementById('fabricType').value = 'normal'; // Reset fabric type
+
+  // Reset new physics controls
+  document.getElementById('damping').value = damping;
+  document.getElementById('dampingValue').textContent = damping.toFixed(2);
+  
+  document.getElementById('friction').value = friction;
+  document.getElementById('frictionValue').textContent = friction.toFixed(2);
+  
+  document.getElementById('bounce').value = bounce;
+  document.getElementById('bounceValue').textContent = bounce.toFixed(2);
+  
+  document.getElementById('massDistribution').value = massDistribution;
+  document.getElementById('massDistributionValue').textContent = massDistribution.toFixed(1);
+
+  createCloth();
+}
+
+function explodeCloth() {
+  const explosionSound = document.getElementById('explosionSound');
+  explosionSound.currentTime = 0;
+  explosionSound.play();
+
+  let centerX = 0, centerY = 0;
+  for (let p of points) {
+    centerX += p.x;
+    centerY += p.y;
+  }
+  centerX /= points.length;
+  centerY /= points.length;
+
+  for (let p of points) {
+    if (!p.pinned) {
+      let dx = p.x - centerX;
+      let dy = p.y - centerY;
+      let distance = Math.hypot(dx, dy);
+      
+      if (distance < 0.0001) distance = 0.0001;
+      dx /= distance;
+      dy /= distance;
+
+      let force = 100 * (1 - Math.min(1, distance / (canvas.width * 0.5)));
+      force *= 0.5 + Math.random();
+
+      p.vx += dx * force;
+      p.vy += dy * force;
+
+      if (force > 50) {
+        sticks = sticks.filter(stick => {
+          if (stick.p1 === p || stick.p2 === p) {
+            return Math.random() > 0.5;
+          }
+          return true;
+        });
+      }
+    }
+  }
+}
+
+function toggleAntiGravity() {
+  antiGravityEnabled = !antiGravityEnabled;
+}
+
+function toggleTornado() {
+  tornadoMode = !tornadoMode;
+}
+
+function toggleWaveEffect() {
+  waveEffectEnabled = !waveEffectEnabled;
+  const button = document.querySelector('button[onclick="toggleWaveEffect()"]');
+  if (waveEffectEnabled) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleRipple() {
+  rippleEffectEnabled = !rippleEffectEnabled;
+  const button = document.querySelector('button[onclick="toggleRipple()"]');
+  if (rippleEffectEnabled) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function togglePulse() {
+  pulseEffectEnabled = !pulseEffectEnabled;
+  const button = document.querySelector('button[onclick="togglePulse()"]');
+  if (pulseEffectEnabled) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleHarmony() {
+  harmonyMode = !harmonyMode;
+  const button = document.querySelector('button[onclick="toggleHarmony()"]');
+  if (harmonyMode) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleGlowPulse() {
+  glowPulseEffect = !glowPulseEffect;
+  const button = document.querySelector('button[onclick="toggleGlowPulse()"]');
+  if (glowPulseEffect) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleGlitter() {
+  glitterEffect = !glitterEffect;
+  const button = document.querySelector('button[onclick="toggleGlitter()"]');
+  if (glitterEffect) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleRippleWaves() {
+  rippleWavesEffect = !rippleWavesEffect;
+  const button = document.querySelector('button[onclick="toggleRippleWaves()"]');
+  if (rippleWavesEffect) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleShimmer() {
+  shimmerEffect = !shimmerEffect;
+  const button = document.querySelector('button[onclick="toggleShimmer()"]');
+  if (shimmerEffect) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleVortex() {
+  vortexEffect = !vortexEffect;
+  const button = document.querySelector('button[onclick="toggleVortex()"]');
+  if (vortexEffect) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleSwirlWave() {
+  swirlWaveEffect = !swirlWaveEffect;
+  const button = document.querySelector('button[onclick="toggleSwirlWave()"]');
+  if (swirlWaveEffect) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleElasticSnap() {
+  elasticSnapEffect = !elasticSnapEffect;
+  const button = document.querySelector('button[onclick="toggleElasticSnap()"]');
+  if (elasticSnapEffect) {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #800080, #008000)';
+  }
+}
+
+function toggleBall() {
+  ball.active = !ball.active;
+  if (ball.active) {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.vx = (Math.random() - 0.5) * 20;
+    ball.vy = -15;
+  }
+}
+
+function togglePin() {
+  pinMode = !pinMode;
+  const button = document.querySelector('button[onclick="togglePin()"]');
+  if (pinMode) {
+    button.style.background = '#ff4444';
+  } else {
+    button.style.background = '#444';
+  }
+}
+
+// Add this function after the other toggle functions
+function togglePoints() {
+  showPoints = !showPoints;
+  const button = document.querySelector('button[onclick="togglePoints()"]');
+  if (showPoints) {
+    button.style.background = 'linear-gradient(45deg, #9b59b6, #3498db)';
+  } else {
+    button.style.background = 'linear-gradient(45deg, #444, #666)';
+  }
+}
+
+createCloth();
+animate(0);
+
+document.querySelectorAll('.dropdown-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const dropdown = header.parentElement;
+    dropdown.classList.toggle('open');
+  });
+});
+</script></body></html>
+```
