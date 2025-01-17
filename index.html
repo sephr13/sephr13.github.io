@@ -3,22 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-<style>
-    .test{
-        text-align: center;
-        padding: 100px;
-        font-size: 100px;
-        font-style: italic;
-        
-    }
-</style>
+    <title>Explore Wonderland</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #333;
+            padding: 20px;
+        }
+        body.rtl {
+            direction: rtl;
+            text-align: right;
+        }
+        header {
+            background: url('https://cdn.mos.cms.futurecdn.net/faW95ok86W7MUhwJFTJkx9-1200-80.jpg.webp') no-repeat center center/cover;
+            height: 300px;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+        header p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        header .language-buttons {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+        header .language-buttons button {
+            background: white;
+            color: #333;
+            border: 1px solid #333;
+            padding: 5px 10px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        header .language-buttons button:hover {
+            background: #333;
+            color: white;
+        }
+        section {
+            max-width: 800px;
+            margin: auto;
+        }
+        h2 {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+        p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        const translations = {
+            en: {
+                title: "Welcome to Wonderland",
+                subtitle: "Your gateway to a world of magic and adventure",
+                sectionTitle: "Discover the Magic of Wonderland",
+                paragraph1: "Wonderland is a place like no other, offering a perfect blend of natural beauty, historic charm, and cultural richness. From the golden sands of Sunset Beach to the majestic peaks of Mountain Haven, every corner of Wonderland promises a unique and unforgettable experience. Whether you're seeking relaxation, adventure, or a glimpse into the past, Wonderland has something for everyone.",
+                paragraph2: "Immerse yourself in the tranquil atmosphere of Sunset Beach, where the gentle sound of waves and the breathtaking view of the setting sun create a haven of peace. For those who crave the thrill of exploration, the trails of Mountain Haven lead to awe-inspiring vistas and serene retreats in the heart of nature.",
+                paragraph3: "Step back in time in our Historic Town, a living museum of culture and heritage. Wander through cobblestone streets, admire centuries-old architecture, and discover stories that have shaped the heart and soul of Wonderland. Each visit is a journey through time, offering a deeper connection to the roots of this enchanting land.",
+                paragraph4: "Come and experience Wonderland for yourself, where every moment is a memory waiting to be made. Let the magic of this extraordinary place captivate your heart and inspire your soul.",
+            },
+            fa: {
+                title: "به واندرلند خوش آمدید",
+                subtitle: "دروازه شما به دنیایی از جادو و ماجراجویی",
+                sectionTitle: "جادوی واندرلند را کشف کنید",
+                paragraph1: "واندرلند مکانی منحصر به فرد است که ترکیبی از زیبایی طبیعی، جذابیت تاریخی و غنای فرهنگی را ارائه می‌دهد. از شن‌های طلایی ساحل سان‌ست گرفته تا قله‌های باشکوه مونتین هیون، هر گوشه از واندرلند تجربه‌ای منحصر به فرد و فراموش‌نشدنی را وعده می‌دهد. چه به دنبال آرامش باشید، چه ماجراجویی یا نگاهی به گذشته، واندرلند چیزی برای همه دارد.",
+                paragraph2: "در فضای آرام‌بخش ساحل سان‌ست غرق شوید، جایی که صدای آرام امواج و منظره نفس‌گیر غروب خورشید آرامشی بی‌نظیر ایجاد می‌کند. برای کسانی که به دنبال هیجان کاوش هستند، مسیرهای مونتین هیون به چشم‌اندازهای شگفت‌انگیز و پناهگاه‌های آرام در قلب طبیعت منتهی می‌شوند.",
+                paragraph3: "به گذشته در شهر تاریخی ما بازگردید، یک موزه زنده از فرهنگ و میراث. در خیابان‌های سنگ‌فرش شده قدم بزنید، از معماری قرن‌ها پیش لذت ببرید و داستان‌هایی را کشف کنید که قلب و روح واندرلند را شکل داده‌اند. هر بازدید سفری در زمان است که ارتباط عمیق‌تری با ریشه‌های این سرزمین جادویی ارائه می‌دهد.",
+                paragraph4: "بیایید و واندرلند را خودتان تجربه کنید، جایی که هر لحظه یک خاطره است که منتظر ساخته شدن است. بگذارید جادوی این مکان فوق‌العاده قلب شما را تسخیر و روح شما را الهام بخشد.",
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.getElementById("title").textContent = translations[lang].title;
+            document.getElementById("subtitle").textContent = translations[lang].subtitle;
+            document.getElementById("sectionTitle").textContent = translations[lang].sectionTitle;
+            document.getElementById("paragraph1").textContent = translations[lang].paragraph1;
+            document.getElementById("paragraph2").textContent = translations[lang].paragraph2;
+            document.getElementById("paragraph3").textContent = translations[lang].paragraph3;
+            document.getElementById("paragraph4").textContent = translations[lang].paragraph4;
+            
+            if (lang === 'fa') {
+                document.body.classList.add('rtl');
+            } else {
+                document.body.classList.remove('rtl');
+            }
+        }
+    </script>
 </head>
 <body>
- <p class="test">This Website Is Going to Get Used In a school project. Copyright 2025</p>
- <p class="test">این وبسایت برای یک پروژه ی مدرسه ای استفاده می شود. کپی رایت ۲۰۲۵</p>
- <p style="text-align: center;">. مدرسه ی علامه حلّی ۱ تهران دوره ی اول</p>
-
-
+    <header>
+        <h1 id="title">Welcome to Wonderland</h1>
+        <p id="subtitle">Your gateway to a world of magic and adventure</p>
+        <div class="language-buttons">
+            <button onclick="changeLanguage('en')">EN</button>
+            <button onclick="changeLanguage('fa')">FA</button>
+        </div>
+    </header>
+    <section>
+        <h2 id="sectionTitle">Discover the Magic of Wonderland</h2>
+        <p id="paragraph1">Wonderland is a place like no other, offering a perfect blend of natural beauty, historic charm, and cultural richness. From the golden sands of Sunset Beach to the majestic peaks of Mountain Haven, every corner of Wonderland promises a unique and unforgettable experience. Whether you're seeking relaxation, adventure, or a glimpse into the past, Wonderland has something for everyone.</p>
+        <p id="paragraph2">Immerse yourself in the tranquil atmosphere of Sunset Beach, where the gentle sound of waves and the breathtaking view of the setting sun create a haven of peace. For those who crave the thrill of exploration, the trails of Mountain Haven lead to awe-inspiring vistas and serene retreats in the heart of nature.</p>
+        <p id="paragraph3">Step back in time in our Historic Town, a living museum of culture and heritage. Wander through cobblestone streets, admire centuries-old architecture, and discover stories that have shaped the heart and soul of Wonderland. Each visit is a journey through time, offering a deeper connection to the roots of this enchanting land.</p>
+        <p id="paragraph4">Come and experience Wonderland for yourself, where every moment is a memory waiting to be made. Let the magic of this extraordinary place captivate your heart and inspire your soul.</p>
+    </section>
+    <footer>
+        <p>&copy; 2025 Explore Wonderland. All rights reserved.</p>
+    </footer>
 </body>
 </html>
