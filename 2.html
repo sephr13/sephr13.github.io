@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>راهنمای ماژول helliemod</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      direction: rtl;
+      font-family: "Vazirmatn", sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      margin: 0;
+      padding: 2rem;
+      color: #0d47a1;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section {
+      background: white;
+      padding: 1.8rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      margin: 1.5rem auto;
+      max-width: 850px;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .section:hover {
+      transform: scale(1.02);
+    }
+
+    code {
+      background: #f5f5f5;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-family: monospace;
+      direction: ltr;
+      font-size: 0.95rem;
+    }
+
+    ul {
+      margin-top: 1rem;
+      padding-right: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.8rem;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      .section { padding: 1.2rem; }
+      h1 { font-size: 1.8rem; }
+      code { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <h1>راهنمای استفاده از ماژول <code>helliemod</code></h1>
+
+  <div class="section">
+    <h2>نصب ماژول</h2>
+    <p>برای نصب ماژول، فقط کافیست دستور زیر را در ترمینال اجرا کنید:</p>
+    <code>pip install helliemod</code>
+  </div>
+
+  <div class="section">
+    <h2>وارد کردن در برنامه</h2>
+    <p>پس از نصب، برای استفاده از توابع ماژول، آن را به شکل زیر وارد کنید:</p>
+    <code>import helliemod</code>
+  </div>
+
+  <div class="section">
+    <h2>توابع موجود در ماژول</h2>
+    <ul>
+      <li><strong><code>fact(n)</code></strong> - محاسبه فاکتوریل عدد</li>
+      <li><strong><code>compare(a, b)</code></strong> - بازگرداندن عدد بزرگ‌تر</li>
+      <li><strong><code>digits(n)</code></strong> - شمارش تعداد ارقام عدد</li>
+      <li><strong><code>sum_digits(n)</code></strong> - مجموع ارقام عدد</li>
+      <li><strong><code>reverse(n)</code></strong> - مقلوب عدد</li>
+      <li><strong><code>check_prime(n)</code></strong> - بررسی اول بودن عدد</li>
+      <li><strong><code>lcm(a, b)</code></strong> - کوچک‌ترین مضرب مشترک</li>
+      <li><strong><code>gcd(a, b)</code></strong> - بزرگ‌ترین مقسوم‌علیه مشترک</li>
+      <li><strong><code>abso_value(n)</code></strong> - قدر مطلق عدد</li>
+      <li><strong><code>fib_seq(n)</code></strong> - تولید دنباله فیبوناچی</li>
+      <li><strong><code>sum_atob(a, b, step=1)</code></strong> - مجموع اعداد بین دو عدد با گام دلخواه</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>راهنما به صورت گرافیکی</h2>
+    <p>برای مشاهده لیست توابع به صورت پنجره گرافیکی، می‌توانید از تابع <code>helliemod.help()</code> استفاده کنید.</p>
+  </div>
+</body>
+</html>
