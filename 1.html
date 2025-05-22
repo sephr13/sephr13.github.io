@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>انتخاب ماژول</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            direction: rtl;
+            font-family: "Vazirmatn", sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #80deea);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .module-button {
+            background: linear-gradient(to right, #42a5f5, #1e88e5);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+        }
+
+        .module-button:hover {
+            background: linear-gradient(to right, #1e88e5, #1565c0);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .module-button {
+                padding: 12px 26px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>یکی از دکمه‌ها را برای آموزش انتخاب کنید</h1>
+    <div class="button-container">
+        <a class="module-button" href="./2.html">helliemod</a>
+        <a class="module-button" href="./3.html">fruitmod</a>
+        <a class="module-button" href="./4.html">humblytkinter</a>
+    </div>
+</body>
+</html>
