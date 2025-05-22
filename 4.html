@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>راهنمای ماژول humblytkinter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      direction: rtl;
+      font-family: "Vazirmatn", sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+      margin: 0;
+      padding: 2rem;
+      color: #004d40;
+      line-height: 1.8;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin: 2rem auto;
+      max-width: 850px;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .section:hover {
+      transform: scale(1.02);
+    }
+
+    code {
+      background: #f5f5f5;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-family: monospace;
+      direction: ltr;
+      font-size: 0.95rem;
+    }
+
+    ul {
+      margin-top: 1rem;
+      padding-right: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 1rem;
+    }
+
+    .important {
+      background: #ffecb3;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      .section { padding: 1.5rem; }
+      h1 { font-size: 1.8rem; }
+      code { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <h1>راهنمای استفاده از ماژول <code>humblytkinter</code></h1>
+
+  <div class="section">
+    <h2>نصب ماژول</h2>
+    <p>برای نصب این ماژول کافیست دستور زیر را در ترمینال وارد کنید:</p>
+    <p><code>pip install humblytkinter</code></p>
+  </div>
+
+  <div class="section">
+    <h2>معرفی کلی</h2>
+    <p>ماژول <code>humblytkinter</code> برای ساده‌سازی ساخت رابط‌های گرافیکی با استفاده از <code>tkinter</code> در پایتون طراحی شده است. این ماژول امکاناتی فراهم می‌کند که ساخت ویجت‌هایی مانند <strong>Label</strong>، <strong>Button</strong> و <strong>Entry</strong> را سریع و آسان می‌سازد.</p>
+  </div>
+
+  <div class="section">
+    <h2>توابع و پارامترهای آن‌ها</h2>
+    <ul>
+      <li><strong>make_window(window_name)</strong> - ایجاد پنجره با عنوان مشخص.</li>
+      <li><strong>make_label(label_text="Hello World", label_height=2, label_width=30, label_number)</strong> - ایجاد لیبل.</li>
+      <li><strong>make_button(button_text="Click Me", button_height=2, button_width=30, button_number, button_command=None)</strong> - ساخت دکمه.</li>
+      <li><strong>make_entry(entry_text="Enter text here", entry_width=30, entry_number)</strong> - ساخت ورودی متن.</li>
+      <li><strong>get_output(entry_number)</strong> - دریافت مقدار نوشته شده در ورودی.</li>
+      <li><strong>last_code()</strong> - اجرای حلقه اصلی برنامه.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>نکات مهم برای جلوگیری از خطا</h2>
+    <div class="important">
+      <ul>
+        <li>شماره‌های <code>label_number</code>، <code>entry_number</code> و <code>button_number</code> باید منحصر به‌فرد باشند.</li>
+        <li>تکرار شماره ویجت‌ها ممکن است باعث بازنویسی یا بروز خطا شود.</li>
+        <li>همیشه در انتهای برنامه از <code>last_code()</code> برای اجرای رابط گرافیکی استفاده کنید.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
